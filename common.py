@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 
 import google.auth
 from google.auth.credentials import Credentials as GcpCredentials
@@ -65,3 +65,42 @@ def get_bq_table(
 
     # API request
     return client.get_table(table_ref)  # type: bigquery.Table
+
+
+def create_bq_dataset(
+    client: bigquery.Client,
+    dataset_id: str,
+    dataset_description: str =None,
+) -> bigquery.Dataset:
+    """
+    Create empty dataset.
+    """
+    # TODO: validate 'dataset_id'.
+    #   > Dataset IDs must be alphanumeric (plus underscores) and must be at most 1024 chars long.
+
+    # note: it is not intuitive the dual instantiation of a 'Dataset' object.
+    dataset = bigquery.Dataset(client.dataset(dataset_id))  # type: bigquery.Dataset
+    dataset.description = dataset_description
+
+    # API request
+    return client.create_dataset(dataset)  # type: bigquery.Dataset
+
+
+def create_bq_table(
+    client: bigquery.Client,
+    dataset: bigquery.Dataset,
+    table_id: str,
+    table_schema: List[bigquery.SchemaField],
+    table_description: str =None,
+) -> bigquery.Table:
+    """
+    Create empty table.
+    """
+    # TODO: validate 'table_id'.
+
+    # note: it is not intuitive the dual instantiation of a 'Table' object.
+    table = bigquery.Table(dataset.table(table_id), schema=table_schema)  # type: bigquery.Table
+    table.description = table_description
+
+    # API request
+    return client.create_table(table)  # type: bigquery.Table
