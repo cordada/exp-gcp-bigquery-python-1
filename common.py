@@ -41,3 +41,27 @@ def execute_bq_query(
     #   is consumed?
     return query_job.result()  # type: bigquery.table.RowIterator
 
+
+def get_bq_dataset(
+    client: bigquery.Client,
+    dataset_id: str,
+    project_id: str =None,
+) -> bigquery.Dataset:
+    # If `project_id is None` then the default project of `client` will be used.
+    dataset_ref = client.dataset(dataset_id, project=project_id)  # type: bigquery.DatasetReference
+
+    # API request
+    return client.get_dataset(dataset_ref)  # type: bigquery.Dataset
+
+
+def get_bq_table(
+    client: bigquery.Client,
+    dataset_id: str,
+    table_id: str,
+    project_id: str =None,
+) -> bigquery.Table:
+    # If `project_id is None` then the default project of `client` will be used.
+    table_ref = client.dataset(dataset_id, project=project_id).table(table_id)  # type: bigquery.TableReference  # noqa: E501
+
+    # API request
+    return client.get_table(table_ref)  # type: bigquery.Table
